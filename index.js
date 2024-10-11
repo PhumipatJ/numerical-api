@@ -10,10 +10,10 @@ const port = process.env.PORT || 5000;
 app.use(cors()); 
 app.use(express.json()); 
 
-// Swagger setup
+
 const swaggerOptions = {
   swaggerDefinition: {
-    openapi: '3.0.0', // Use OpenAPI 3.0
+    openapi: '3.0.0', 
     info: {
       title: 'Equatione API',
       version: '1.0.0',
@@ -21,8 +21,8 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: `https://numerical-method-web-app.onrender.com`, 
-        description: 'Render server'
+        url: `https://pj-numer-api.onrender.com`, 
+        description: 'Render API server'
       },
       {
         url: `http://localhost:${port}`,
@@ -597,6 +597,59 @@ app.get("/integrateData/random", (req, res) => {
   res.json(integrateData[randomIndex]);
 });
 
+
+let differentiateData = [];
+db.query('SELECT * FROM differentiate_data', (err, res) => {
+  if (err) {
+    console.error('Error executing query', err.stack);
+  } else {
+    differentiateData = res.rows;
+  }
+});
+
+// 9. GET Differentiate Data randomly
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     InterExtraData:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *           example: 1
+ *         data_id:
+ *           type: integer
+ *           example: 1
+ *         fx:
+ *           type: string
+ *           example: "9cos(x)^6"
+ *         x:
+ *           type: number
+ *           format: double
+ *           example: 11
+ *         h:
+ *           type: number
+ *           format: double
+ *           example: 0.4
+ *
+ * /differentiateData/random:
+ *   get:
+ *     summary: Retrieve one differentiate data randomly
+ *     responses:
+ *       200:
+ *         description: A list of differentiate data entries
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/InterExtraData'
+ */
+app.get("/differentiateData/random", (req, res) => {
+  const randomIndex = Math.floor(Math.random() * differentiateData.length);
+  res.json(differentiateData[randomIndex]);
+});
 
 app.listen(port, () => {
   console.log(`Successfully started server on port ${port}.`);
